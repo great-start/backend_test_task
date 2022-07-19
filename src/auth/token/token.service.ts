@@ -20,7 +20,7 @@ export class TokenService {
 
   private _generateToken(user: IUser) {
     const payload = { id: user.id, email: user.email };
-    const accessToken = jwt.sign(payload, constants.JWT_ACCESS_TOKEN_TIME, {
+    const accessToken = jwt.sign(payload, constants.JWT_SECRET_KEY, {
       expiresIn: constants.JWT_ACCESS_TOKEN_TIME,
     });
     return { accessToken, userId: user.id };

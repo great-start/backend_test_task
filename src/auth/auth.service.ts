@@ -9,7 +9,8 @@ import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { TokenService } from './token/token.service';
 import { SignInAuthDto } from './dto/signIn-auth.dto';
-import {constants} from "../constants/constants";
+import { Request } from 'express';
+import { IRequestExtended } from '../user/intefaces/extended.Request.interface';
 
 @Injectable()
 export class AuthService {
@@ -107,5 +108,32 @@ export class AuthService {
     }
   }
 
+  async checkAccess(request: Request) {
+    try {
+      const authHeader = request.headers.authorization;
+      const bearer = authHeader.split(' ')[0];
+      const token = authHeader.split(' ')[1];
 
+      if (bearer !== 'Bearer' || !token) {
+        throw new UnauthorizedException('No token');
+      }
+
+      const { accessToken } = await this.tokenService.findToken(token);
+
+      if (!accessToken) {
+        throw new UnauthorizedException('Permission denied');
+      }
+
+      const { email } = await this.tokenService.verifyToken(token);
+      const existingUser = await this.userService.findOneByEmail(email);
+      if (!existingUser) {
+        throw new UnauthorizedException('Permision demied');
+      }
+
+      return existingUser;
+    } catch (e) {
+      console.log('false');
+      throw new UnauthorizedException(e.response?.error, e.message);
+    }
+  }
 }

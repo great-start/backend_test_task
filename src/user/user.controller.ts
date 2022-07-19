@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -6,9 +6,10 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CheckAccessGuard } from '../auth/guards/check.access.guard';
 
 import { RolesEnum } from '../auth/enum/roles.enum';
+import { IRequestExtended } from './intefaces/extended.Request.interface';
 
 @ApiTags('User')
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -35,7 +36,7 @@ export class UserController {
   })
   @UseGuards(CheckAccessGuard)
   @Get('/')
-  getUsersList(@Request() request: IRequestExtended) {
+  getUsersList(@Req() request: IRequestExtended) {
     return this.userService.getUsersList(request);
   }
 

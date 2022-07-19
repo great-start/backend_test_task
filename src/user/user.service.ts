@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateAuthDto } from '../auth/dto/create-auth.dto';
+import { IRequestExtended } from './intefaces/extended.Request.interface';
+import { RolesEnum } from '../auth/enum/roles.enum';
 
 @Injectable()
 export class UserService {
@@ -31,7 +32,31 @@ export class UserService {
   //   return `This action removes a #${id} user`;
   // }
 
-  getUsersList() {
+  async getUsersList(request: IRequestExtended) {
+    try {
+      const { id: userId, role } = request.user;
 
+      if (role === RolesEnum.USER) {
+        return this.prismaService.user.findUnique({
+          where: {
+            id: userId,
+          },
+        });
+      }
+
+      if (role === RolesEnum.BOSS) {
+        return this.prismaService.user.findUnique({
+          where: {
+            id: userId,
+          },
+        });
+      }
+
+      if (role === RolesEnum.ADMIN) {
+        return this.prismaService.user.findMany();
+      }
+    } catch (e) {
+      throw new HttpException(e.message, e.status);
+    }
   }
 }
