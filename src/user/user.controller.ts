@@ -1,13 +1,43 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import {ApiTags} from "@nestjs/swagger";
+
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+import { CheckAccessGuard } from '../auth/guards/check.access.guard';
+
+import { RolesEnum } from '../auth/enum/roles.enum';
 
 @ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @ApiOperation({
+    summary:
+      "Return list off users, taking into account user's role (ADMIN | BOSS | USER)",
+    description: 'Get list off users',
+  })
+  @ApiResponse({
+    status: 201,
+    schema: {
+      example: {
+        users: [
+          {
+            name: 'Vanya',
+            email: 'Petrov',
+            password: 'ciSB37678dhSUQBS',
+            role: RolesEnum,
+            bossId: 1,
+          },
+        ],
+      },
+    },
+  })
+  @UseGuards(CheckAccessGuard)
+  @Get('/')
+  getUsersList(@Request() request: IRequestExtended) {
+    return this.userService.getUsersList(request);
+  }
 
   // @Post()
   // create(@Body() createUserDto: CreateUserDto) {

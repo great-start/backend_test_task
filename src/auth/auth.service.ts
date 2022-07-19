@@ -1,8 +1,15 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { TokenService } from './token/token.service';
+import { SignInAuthDto } from './dto/signIn-auth.dto';
+import {constants} from "../constants/constants";
 
 @Injectable()
 export class AuthService {
@@ -27,7 +34,7 @@ export class AuthService {
   //   return `This action removes a #${id} auth`;
   // }
 
-  async register(user: CreateAuthDto) {
+  public async register(user: CreateAuthDto) {
     try {
       const existingUser = await this.userService.findOneByEmail(user.email);
 
@@ -57,4 +64,48 @@ export class AuthService {
       throw new HttpException(e.message, e.status);
     }
   }
+
+  public async signIn(user: SignInAuthDto) {
+    try {
+      const existingUser = await this._validateUser(user);
+
+      const { accessToken } = await this.tokenService.getToken(existingUser);
+
+      const { accessToken: token } = await this.tokenService.saveToken(
+        accessToken,
+        existingUser.id,
+      );
+
+      return {
+        token,
+      };
+    } catch (e) {
+      throw new HttpException(e.message, e.status);
+    }
+  }
+
+  private async _validateUser(user: SignInAuthDto) {
+    try {
+      const existingUser = await this.userService.findOneByEmail(user.email);
+
+      if (!existingUser) {
+        throw new UnauthorizedException('Wrong password or email');
+      }
+
+      const isPasswordCorrect = await bcrypt.compare(
+        user.password,
+        existingUser.password,
+      );
+
+      if (!isPasswordCorrect) {
+        throw new UnauthorizedException('Wrong password or email');
+      }
+
+      return existingUser;
+    } catch (e) {
+      throw new HttpException(e.message, e.status);
+    }
+  }
+
+
 }

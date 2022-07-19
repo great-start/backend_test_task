@@ -1,16 +1,8 @@
-import {
-  Controller,
-  Post,
-  Body,
-} from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { SignInAuthDto } from './dto/signIn-auth.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -36,41 +28,20 @@ export class AuthController {
   }
 
   @ApiOperation({
-    summary: 'Sign in using email, password, and accessToken in request headers',
-    description: 'registration',
+    summary: 'Sign in using email, password',
+    description: 'Sign in',
   })
   @ApiResponse({
     status: 201,
     schema: {
       example: {
-        accessToken: 'asd234vdce5te5b123vqfve5tb5t',
+        token: 'asd234vdce5te5b123vqfve5tb5tc,2308mv0298mcv23v34v45cewcc3c',
       },
     },
   })
   @ApiBody({ type: CreateAuthDto })
-  @Post('register')
-  signIn(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.register(createAuthDto);
+  @Post('signIn')
+  signIn(@Body() user: SignInAuthDto) {
+    return this.authService.signIn(user);
   }
-
-
-  // @Get()
-  // findAll() {
-  //   return this.authService.findAll();
-  // }
-  //
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.authService.findOne(+id);
-  // }
-  //
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-  //   return this.authService.update(+id, updateAuthDto);
-  // }
-  //
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.authService.remove(+id);
-  // }
 }
