@@ -4,13 +4,13 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { Request } from 'express';
+
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UserService } from '../user/user.service';
-import * as bcrypt from 'bcrypt';
 import { TokenService } from './token/token.service';
 import { SignInAuthDto } from './dto/signIn-auth.dto';
-import { Request } from 'express';
-import { IRequestExtended } from '../user/intefaces/extended.Request.interface';
 
 @Injectable()
 export class AuthService {
@@ -18,22 +18,6 @@ export class AuthService {
     private userService: UserService,
     private tokenService: TokenService,
   ) {}
-
-  // findAll() {
-  //   return `This action returns all auth`;
-  // }
-  //
-  // findOne(id: number) {
-  //   return `This action returns a #${id} auth`;
-  // }
-  //
-  // update(id: number, updateAuthDto: UpdateAuthDto) {
-  //   return `This action updates a #${id} auth`;
-  // }
-  //
-  // remove(id: number) {
-  //   return `This action removes a #${id} auth`;
-  // }
 
   public async register(user: CreateAuthDto) {
     try {
@@ -118,21 +102,20 @@ export class AuthService {
         throw new UnauthorizedException('No token');
       }
 
-      const { accessToken } = await this.tokenService.findToken(token);
+      const tokenData = await this.tokenService.findToken(token);
 
-      if (!accessToken) {
+      if (!tokenData) {
         throw new UnauthorizedException('Permission denied');
       }
 
       const { email } = await this.tokenService.verifyToken(token);
       const existingUser = await this.userService.findOneByEmail(email);
       if (!existingUser) {
-        throw new UnauthorizedException('Permision demied');
+        throw new UnauthorizedException('Permission denied');
       }
 
       return existingUser;
     } catch (e) {
-      console.log('false');
       throw new UnauthorizedException(e.response?.error, e.message);
     }
   }

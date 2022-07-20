@@ -24,12 +24,12 @@ export class CreateAuthDto {
   @ApiProperty({ example: 'Vs78SID12nm', description: 'user password' })
   @IsString()
   @IsNotEmpty()
-  @Length(6)
+  @Length(2)
   password: string;
 
   @ApiProperty({
-    example: 'USER | BOSS | ADMIN',
-    description: 'user role. Be default - USER',
+    example: 'USER',
+    description: 'user role (USER | BOSS | ADMIN). By default - USER',
   })
   role?: RolesEnum;
 

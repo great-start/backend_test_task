@@ -10,6 +10,6 @@ export class SignInAuthDto {
   @ApiProperty({ example: 'Vs78SID12nm', description: 'user password' })
   @IsString()
   @IsNotEmpty()
-  @Length(6)
+  @Length(3)
   password: string;
 }

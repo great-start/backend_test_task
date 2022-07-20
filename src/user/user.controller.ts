@@ -1,12 +1,22 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { UserService } from './user.service';
-
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  Param,
+  Req,
+  Res,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import {ApiBearerAuth, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
+import { Response } from 'express';
 
 import { CheckAccessGuard } from '../auth/guards/check.access.guard';
-
 import { RolesEnum } from '../auth/enum/roles.enum';
 import { IRequestExtended } from './intefaces/extended.Request.interface';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserService } from './user.service';
 
 @ApiTags('User')
 @Controller('users')
@@ -24,9 +34,9 @@ export class UserController {
       example: {
         users: [
           {
+            id: 1,
             name: 'Vanya',
             email: 'Petrov',
-            password: 'ciSB37678dhSUQBS',
             role: RolesEnum,
             bossId: 1,
           },
@@ -34,35 +44,36 @@ export class UserController {
       },
     },
   })
+  @ApiBearerAuth()
   @UseGuards(CheckAccessGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get('/')
   getUsersList(@Req() request: IRequestExtended) {
     return this.userService.getUsersList(request);
   }
 
-  // @Post()
-  // create(@Body() createUserDto: CreateUserDto) {
-  //   return this.userService.create(createUserDto);
-  // }
-  //
-  //
-  // @Get('/:id')
-  // getUsers(@Param('id') id: string) {
-  //   return this.userService.getAll(+id);
-  // }
-  //
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.userService.findOne(+id);
-  // }
-  //
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.userService.update(+id, updateUserDto);
-  // }
-  //
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.userService.remove(+id);
-  // }
+  @ApiOperation({
+    summary:
+      'Change user`s boss, taking into account, that endpoint require user with role BOSS',
+    description: 'Change user`s boss',
+  })
+  @ApiResponse({
+    status: 200,
+    schema: {
+      example: {
+        message:
+          'You successfully changed boss for your subordinates! New bossId 23',
+      },
+    },
+  })
+  @UseGuards(CheckAccessGuard, RolesGuard)
+  @Roles(RolesEnum.BOSS)
+  @Get('change/:bossId')
+  change(
+    @Req() request: IRequestExtended,
+    @Param('bossId') bossId: string,
+    @Res() response: Response,
+  ) {
+    return this.userService.changeBoss(request, bossId, response);
+  }
 }

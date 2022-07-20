@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
+
 import { PrismaService } from '../../prisma.service';
 import { IUser } from '../../user/intefaces/user.inteface';
 import * as jwt from 'jsonwebtoken';
-import { constants } from '../../constants/constants';
 
 @Injectable()
 export class TokenService {
@@ -20,8 +20,8 @@ export class TokenService {
 
   private _generateToken(user: IUser) {
     const payload = { id: user.id, email: user.email };
-    const accessToken = jwt.sign(payload, constants.JWT_SECRET_KEY, {
-      expiresIn: constants.JWT_ACCESS_TOKEN_TIME,
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
+      expiresIn: process.env.JWT_ACCESS_TOKEN_TIME,
     });
     return { accessToken, userId: user.id };
   }
@@ -35,14 +35,6 @@ export class TokenService {
   }
 
   public async verifyToken(token: string) {
-    return jwt.verify(token, constants.JWT_SECRET_KEY);
-  }
-
-  async deleteTokenPair(user: IUser) {
-    return this.prismaService.token.deleteMany({
-      where: {
-        userId: user.id,
-      },
-    });
+    return jwt.verify(token, process.env.JWT_SECRET_KEY);
   }
 }
