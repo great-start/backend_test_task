@@ -34,18 +34,14 @@ export class UserController {
     description: 'Get list off users',
   })
   @ApiResponse({
-    status: 201,
+    status: 200,
     schema: {
       example: {
-        users: [
-          {
-            id: 1,
-            name: 'Vanya',
-            email: 'Petrov',
-            role: RolesEnum,
-            bossId: 1,
-          },
-        ],
+        id: 1,
+        name: 'Vanya',
+        email: 'Petrov',
+        role: 'USER',
+        bossId: 1,
       },
     },
   })

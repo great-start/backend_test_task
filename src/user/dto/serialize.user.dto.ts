@@ -1,4 +1,4 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 
 export class SerializeUserDto {
   id?: number;
@@ -9,6 +9,9 @@ export class SerializeUserDto {
   password?: string;
   role?: string;
   bossId?: number;
+
+  @Type(() => SerializeUserDto)
+  subordinates?: SerializeUserDto[];
 
   constructor(partial: Partial<SerializeUserDto>) {
     Object.assign(this, partial);

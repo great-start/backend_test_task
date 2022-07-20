@@ -12,7 +12,7 @@ export class AuthController {
 
   @ApiOperation({
     summary: 'Register user using data',
-    description: 'registration',
+    description: 'Registration',
   })
   @ApiResponse({
     status: 201,
@@ -33,7 +33,7 @@ export class AuthController {
     description: 'Sign in',
   })
   @ApiResponse({
-    status: 201,
+    status: 200,
     schema: {
       example: {
         token: 'asd234vdce5te5b123vqfve5tb5tc,2308mv0298mcv23v34v45cewcc3c',
