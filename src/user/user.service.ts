@@ -20,6 +20,13 @@ export class UserService {
       where: {
         email,
       },
+      include: {
+        _count: {
+          select: {
+            subordinates: true,
+          },
+        },
+      },
     });
   }
 
@@ -27,39 +34,46 @@ export class UserService {
     return this.prismaService.user.create({ data: user });
   }
 
+  async findBoss(bossId: number) {
+    return this.prismaService.user.findFirst({
+      where: {
+        id: bossId,
+      },
+    });
+  }
+
   async getUsersList(
     request: IRequestExtended,
   ): Promise<SerializeUserDto | SerializeUserDto[]> {
     try {
-      const { id: userId, role } = request.user;
+      const { id: userId, role, email } = request.user;
 
       if (role === RolesEnum.USER) {
-        const user = await this.prismaService.user.findUnique({
-          where: {
-            id: userId,
-          },
-        });
-        return new SerializeUserDto(user);
-      }
+        const userData = await this.findOneByEmail(email);
+        const subordinates = userData._count.subordinates;
+        delete userData._count;
 
-      if (role === RolesEnum.BOSS) {
-        const user = await this.prismaService.user.findUnique({
-          where: {
-            id: userId,
-          },
-          include: {
-            subordinates: {
-              include: {
-                subordinates: {
-                  include: {
-                    subordinates: true,
+        if (subordinates === 0) {
+          return new SerializeUserDto(userData);
+        } else {
+          const user = await this.prismaService.user.findUnique({
+            where: {
+              id: userId,
+            },
+            include: {
+              subordinates: {
+                include: {
+                  subordinates: {
+                    include: {
+                      subordinates: true,
+                    },
                   },
                 },
               },
             },
-          },
-        });
-        return new SerializeUserDto(user);
+          });
+          return new SerializeUserDto(user);
+        }
       }
 
       if (role === RolesEnum.ADMIN) {
@@ -95,7 +109,7 @@ export class UserService {
 
       if (!existingBoss) {
         throw new BadRequestException(
-          `Boss with id ${changeBossId} does not exist. You can not change your subordinates boss` ,
+          `Boss with id ${changeBossId} does not exist. You can not change your subordinates boss`,
         );
       }
 

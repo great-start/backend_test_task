@@ -1,6 +1,6 @@
 import {
+  BadRequestException,
   HttpException,
-  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -24,7 +24,15 @@ export class AuthService {
       const existingUser = await this.userService.findOneByEmail(user.email);
 
       if (existingUser) {
-        throw new HttpException('User already exist', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException('User already exist');
+      }
+
+      const existingBoss = await this.userService.findBoss(user.bossId);
+
+      if (!existingBoss) {
+        throw new BadRequestException(
+          `User with ${user.bossId} does not exist. Put existing bossId`,
+        );
       }
 
       const hashPass = await bcrypt.hash(user.password, 5);
@@ -46,7 +54,14 @@ export class AuthService {
         token,
       };
     } catch (e) {
-      throw new HttpException(e.message, e.status);
+      throw new HttpException(
+        {
+          message: e.response?.message,
+          error: e.response?.error,
+          status: e.response?.statusCode,
+        },
+        e.status,
+      );
     }
   }
 
@@ -65,7 +80,7 @@ export class AuthService {
         token,
       };
     } catch (e) {
-      throw new HttpException(e.message, e.status);
+      throw new HttpException(e.response?.error, e.status);
     }
   }
 
@@ -88,7 +103,7 @@ export class AuthService {
 
       return existingUser;
     } catch (e) {
-      throw new HttpException(e.message, e.status);
+      throw new HttpException(e, e.status);
     }
   }
 
@@ -114,6 +129,7 @@ export class AuthService {
 
       const { email } = await this.tokenService.verifyToken(token);
       const existingUser = await this.userService.findOneByEmail(email);
+
       if (!existingUser) {
         throw new UnauthorizedException('Permission denied');
       }

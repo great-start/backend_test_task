@@ -10,9 +10,11 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
   ApiOperation,
-  ApiResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Response } from 'express';
 
@@ -30,10 +32,10 @@ export class UserController {
 
   @ApiOperation({
     summary:
-      "Return list off users, taking into account user's role (ADMIN | BOSS | USER)",
+      "Return list off users, taking into account user's role admin, boss, user",
     description: 'Get list off users',
   })
-  @ApiResponse({
+  @ApiOkResponse({
     status: 200,
     schema: {
       example: {
@@ -42,6 +44,24 @@ export class UserController {
         email: 'Petrov',
         role: 'USER',
         bossId: 1,
+        subordinates: [],
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Permission denied',
+        error: 'Unauthorized',
+      },
+    },
+  })
+  @ApiInternalServerErrorResponse({
+    schema: {
+      example: {
+        status: 500,
+        error: 'Server error',
       },
     },
   })
@@ -55,10 +75,10 @@ export class UserController {
 
   @ApiOperation({
     summary:
-      'Change user`s boss, taking into account, that endpoint require user with role BOSS',
+      'Change user`s boss, taking into account, that endpoint require user with role USER and who has subordinates',
     description: 'Change user`s boss',
   })
-  @ApiResponse({
+  @ApiOkResponse({
     status: 200,
     schema: {
       example: {
@@ -67,9 +87,17 @@ export class UserController {
       },
     },
   })
+  @ApiInternalServerErrorResponse({
+    schema: {
+      example: {
+        status: 500,
+        error: 'Server error',
+      },
+    },
+  })
   @ApiBearerAuth()
   @UseGuards(CheckAccessGuard, RolesGuard)
-  @Roles(RolesEnum.BOSS)
+  @Roles(RolesEnum.USER)
   @Get('change/:bossId')
   change(
     @Req() request: IRequestExtended,
