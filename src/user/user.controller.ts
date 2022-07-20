@@ -8,7 +8,12 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {ApiBearerAuth, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Response } from 'express';
 
 import { CheckAccessGuard } from '../auth/guards/check.access.guard';
@@ -66,6 +71,7 @@ export class UserController {
       },
     },
   })
+  @ApiBearerAuth()
   @UseGuards(CheckAccessGuard, RolesGuard)
   @Roles(RolesEnum.BOSS)
   @Get('change/:bossId')

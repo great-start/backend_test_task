@@ -95,6 +95,10 @@ export class AuthService {
   async checkAccess(request: Request) {
     try {
       const authHeader = request.headers.authorization;
+
+      if (!authHeader) {
+        throw new UnauthorizedException('No token');
+      }
       const bearer = authHeader.split(' ')[0];
       const token = authHeader.split(' ')[1];
 
