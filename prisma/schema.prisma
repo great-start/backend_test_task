@@ -33,6 +33,5 @@ model Token {
 
 enum Role {
   USER
-  BOSS
   ADMIN
 }

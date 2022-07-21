@@ -9,7 +9,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
@@ -19,10 +21,7 @@ import {
 import { Response } from 'express';
 
 import { CheckAccessGuard } from '../auth/guards/check.access.guard';
-import { RolesEnum } from '../auth/enum/roles.enum';
 import { IRequestExtended } from './intefaces/extended.Request.interface';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
 import { UserService } from './user.service';
 
 @ApiTags('User')
@@ -32,28 +31,26 @@ export class UserController {
 
   @ApiOperation({
     summary:
-      "Return list off users, taking into account user's role admin, boss, user",
+      "Return list off users, taking into account user's role admin, user",
     description: 'Get list off users',
   })
   @ApiOkResponse({
     status: 200,
     schema: {
       example: {
-        id: 1,
+        id: 5,
         name: 'Vanya',
         email: 'Petrov',
-        role: 'USER',
         bossId: 1,
-        subordinates: [],
       },
     },
   })
   @ApiUnauthorizedResponse({
     schema: {
       example: {
-        statusCode: 401,
         message: 'Permission denied',
         error: 'Unauthorized',
+        statusCode: 401,
       },
     },
   })
@@ -87,6 +84,38 @@ export class UserController {
       },
     },
   })
+  @ApiForbiddenResponse({
+    status: 403,
+    schema: {
+      example: {
+        message:
+          'Forbidden resource. Only for users with subordinates. Not for ADMIN',
+        error: 'Forbidden resource',
+        statusCode: 403,
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    status: 401,
+    schema: {
+      example: {
+        message: 'Permission denied',
+        error: 'Unauthorized',
+        statusCode: 401,
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    schema: {
+      example: {
+        message:
+          'User with id - 5 does not exist. Choose another id user for BOSS changing',
+        error: 'Bad request',
+        statusCode: 400,
+      },
+    },
+  })
   @ApiInternalServerErrorResponse({
     schema: {
       example: {
@@ -96,12 +125,11 @@ export class UserController {
     },
   })
   @ApiBearerAuth()
-  @UseGuards(CheckAccessGuard, RolesGuard)
-  @Roles(RolesEnum.USER)
-  @Get('change/:bossId')
+  @UseGuards(CheckAccessGuard)
+  @Get('change/:changeBossId')
   change(
     @Req() request: IRequestExtended,
-    @Param('bossId') bossId: string,
+    @Param('changeBossId') bossId: string,
     @Res() response: Response,
   ) {
     return this.userService.changeBoss(request, bossId, response);

@@ -1,4 +1,9 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  HttpException,
+  Injectable,
+} from '@nestjs/common';
 import { Response } from 'express';
 
 import { PrismaService } from '../prisma.service';
@@ -6,6 +11,7 @@ import { CreateAuthDto } from '../auth/dto/create-auth.dto';
 import { IRequestExtended } from './intefaces/extended.Request.interface';
 import { RolesEnum } from '../auth/enum/roles.enum';
 import { SerializeUserDto } from './dto/serialize.user.dto';
+import { IUser } from './intefaces/user.inteface';
 
 @Injectable()
 export class UserService {
@@ -56,23 +62,12 @@ export class UserService {
         if (subordinates === 0) {
           return new SerializeUserDto(userData);
         } else {
-          const user = await this.prismaService.user.findUnique({
-            where: {
-              id: userId,
-            },
-            include: {
-              subordinates: {
-                include: {
-                  subordinates: {
-                    include: {
-                      subordinates: true,
-                    },
-                  },
-                },
-              },
-            },
-          });
-          return new SerializeUserDto(user);
+          return (await this.prismaService.$queryRaw`
+            WITH RECURSIVE subordinates AS (
+                SELECT id, name, email, "bossId" FROM "User" WHERE id = ${+userId} 
+                UNION SELECT u.id, u.name, u.email, u."bossId" FROM "User" u 
+                INNER JOIN subordinates s ON s.id = u."bossId"
+            ) SELECT * FROM subordinates`) as SerializeUserDto[];
         }
       }
 
@@ -86,10 +81,20 @@ export class UserService {
             role: true,
             bossId: true,
           },
+          orderBy: {
+            id: 'asc',
+          },
         });
       }
     } catch (e) {
-      throw new HttpException(e.message, e.status);
+      throw new HttpException(
+        {
+          message: e.response?.message,
+          error: e.response?.error,
+          statusCode: e.response?.statusCode,
+        },
+        e.status,
+      );
     }
   }
 
@@ -99,7 +104,16 @@ export class UserService {
     response: Response,
   ) {
     try {
-      const { id } = request.user;
+      const { id: userId, email } = request.user;
+
+      const userData = await this.findOneByEmail(email);
+      const subordinates = userData._count.subordinates;
+
+      if (subordinates === 0) {
+        throw new ForbiddenException(
+          `Forbidden resource. Only for users with subordinates`,
+        );
+      }
 
       const existingBoss = await this.prismaService.user.findUnique({
         where: {
@@ -109,13 +123,28 @@ export class UserService {
 
       if (!existingBoss) {
         throw new BadRequestException(
-          `Boss with id ${changeBossId} does not exist. You can not change your subordinates boss`,
+          `User with id - ${changeBossId} does not exist. Choose another id user for BOSS changing`,
         );
       }
 
+      const bossSubordinates = (await this.prismaService.$queryRaw`
+            WITH RECURSIVE subordinates AS (
+                SELECT id, name, email, "bossId" FROM "User" WHERE id = ${+userId} 
+                UNION SELECT u.id, u.name, u.email, u."bossId" FROM "User" u 
+                INNER JOIN subordinates s ON s.id = u."bossId"
+            ) SELECT * FROM subordinates`) as IUser[];
+
+      bossSubordinates.forEach((user) => {
+        if (user.id === +changeBossId) {
+          throw new BadRequestException(
+            'You can not transfer your BOSS rights to one of your subordinates. Choose another id user for BOSS',
+          );
+        }
+      });
+
       await this.prismaService.user.updateMany({
         where: {
-          bossId: id,
+          bossId: userId,
         },
         data: {
           bossId: +changeBossId,
@@ -123,10 +152,17 @@ export class UserService {
       });
 
       response.status(200).json({
-        message: `You successfully changed boss for your subordinates! New bossId ${changeBossId}`,
+        message: `You successfully changed boss for your subordinates! New bossId - ${changeBossId}`,
       });
     } catch (e) {
-      throw new HttpException(e.message, e.status);
+      throw new HttpException(
+        {
+          message: e.response?.message,
+          error: e.response?.error,
+          statusCode: e.response?.statusCode,
+        },
+        e.status,
+      );
     }
   }
 }

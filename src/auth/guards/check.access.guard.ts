@@ -20,7 +20,14 @@ export class CheckAccessGuard implements CanActivate {
 
       return true;
     } catch (e) {
-      throw new UnauthorizedException(e.response?.error, e.message);
+      throw new UnauthorizedException(
+        {
+          message: e.response?.message,
+          error: e.response?.error,
+          statusCode: e.response?.statusCode,
+        },
+        e.message,
+      );
     }
   }
 }

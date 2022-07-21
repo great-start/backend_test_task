@@ -5,12 +5,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UserService } from '../user/user.service';
 import { TokenService } from './token/token.service';
 import { SignInAuthDto } from './dto/signIn-auth.dto';
+import { RolesEnum } from './enum/roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -27,18 +28,22 @@ export class AuthService {
         throw new BadRequestException('User already exist');
       }
 
-      const existingBoss = await this.userService.findBoss(user.bossId);
+      if (user.role !== RolesEnum.ADMIN) {
+        const existingBoss = await this.userService.findBoss(user.bossId);
 
-      if (!existingBoss) {
-        throw new BadRequestException(
-          `User with ${user.bossId} does not exist. Put existing bossId`,
-        );
+        if (!existingBoss) {
+          throw new BadRequestException(
+            `User with ${user.bossId} does not exist. Put existing related bossId`,
+          );
+        }
       }
 
       const hashPass = await bcrypt.hash(user.password, 5);
       const savedUser = await this.userService.saveUserToDB({
         ...user,
         password: hashPass,
+        bossId:
+          user.role === RolesEnum.ADMIN && user.bossId ? null : user.bossId,
       });
 
       const { accessToken, userId } = await this.tokenService.getToken(
@@ -58,14 +63,14 @@ export class AuthService {
         {
           message: e.response?.message,
           error: e.response?.error,
-          status: e.response?.statusCode,
+          statusCode: e.response?.statusCode,
         },
         e.status,
       );
     }
   }
 
-  public async signIn(user: SignInAuthDto) {
+  public async signIn(user: SignInAuthDto, res: Response) {
     try {
       const existingUser = await this._validateUser(user);
 
@@ -76,35 +81,36 @@ export class AuthService {
         existingUser.id,
       );
 
-      return {
-        token,
-      };
+      res.status(200).json({ token });
     } catch (e) {
-      throw new HttpException(e.response?.error, e.status);
+      throw new HttpException(
+        {
+          message: e.response?.message,
+          error: e.response?.error,
+          statusCode: e.response?.statusCode,
+        },
+        e.status,
+      );
     }
   }
 
   private async _validateUser(user: SignInAuthDto) {
-    try {
-      const existingUser = await this.userService.findOneByEmail(user.email);
+    const existingUser = await this.userService.findOneByEmail(user.email);
 
-      if (!existingUser) {
-        throw new UnauthorizedException('Wrong password or email');
-      }
-
-      const isPasswordCorrect = await bcrypt.compare(
-        user.password,
-        existingUser.password,
-      );
-
-      if (!isPasswordCorrect) {
-        throw new UnauthorizedException('Wrong password or email');
-      }
-
-      return existingUser;
-    } catch (e) {
-      throw new HttpException(e, e.status);
+    if (!existingUser) {
+      throw new UnauthorizedException('Wrong password or email');
     }
+
+    const isPasswordCorrect = await bcrypt.compare(
+      user.password,
+      existingUser.password,
+    );
+
+    if (!isPasswordCorrect) {
+      throw new UnauthorizedException('Wrong password or email');
+    }
+
+    return existingUser;
   }
 
   async checkAccess(request: Request) {
@@ -136,7 +142,14 @@ export class AuthService {
 
       return existingUser;
     } catch (e) {
-      throw new UnauthorizedException(e.response?.error, e.message);
+      throw new HttpException(
+        {
+          message: e.response?.message,
+          error: e.response?.error,
+          statusCode: e.response?.statusCode,
+        },
+        e.message,
+      );
     }
   }
 }

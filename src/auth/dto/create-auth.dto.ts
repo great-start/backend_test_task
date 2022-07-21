@@ -42,10 +42,7 @@ export class CreateAuthDto {
     description:
       'BossId. Required field if role is USER. Unnecessary for ADMIN. Must be conforming to the id existing user',
   })
-  @ValidateIf((o) => o.role !== 'ADMIN')
-  @IsNotEmpty({
-    message: 'If role = USER, field bossId is required',
-  })
+  @ValidateIf((user) => user.role === 'USER')
   @IsNotEmpty({
     message: 'If role = USER, field bossId is required',
   })

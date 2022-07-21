@@ -7,6 +7,8 @@ export class SerializeUserDto {
 
   @Exclude()
   password?: string;
+
+  @Exclude()
   role?: string;
   bossId?: number;
 
