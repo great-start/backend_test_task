@@ -10,7 +10,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { RegisterAuthDto } from './dto/register-auth.dto';
 import { SignInAuthDto } from './dto/signIn-auth.dto';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
@@ -52,9 +52,9 @@ export class AuthController {
       },
     },
   })
-  @ApiBody({ type: CreateAuthDto })
+  @ApiBody({ type: RegisterAuthDto })
   @Post('register')
-  register(@Body() createAuthDto: CreateAuthDto) {
+  register(@Body() createAuthDto: RegisterAuthDto) {
     return this.authService.register(createAuthDto);
   }
 

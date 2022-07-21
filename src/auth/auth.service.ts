@@ -7,7 +7,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { RegisterAuthDto } from './dto/register-auth.dto';
 import { UserService } from '../user/user.service';
 import { TokenService } from './token/token.service';
 import { SignInAuthDto } from './dto/signIn-auth.dto';
@@ -20,7 +20,7 @@ export class AuthService {
     private tokenService: TokenService,
   ) {}
 
-  public async register(user: CreateAuthDto) {
+  public async register(user: RegisterAuthDto) {
     try {
       const existingUser = await this.userService.findOneByEmail(user.email);
 

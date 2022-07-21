@@ -10,7 +10,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { RolesEnum } from '../enum/roles.enum';
 
-export class CreateAuthDto {
+export class RegisterAuthDto {
   @ApiProperty({ example: 'Vanya', description: 'name' })
   @IsString()
   @IsNotEmpty()
