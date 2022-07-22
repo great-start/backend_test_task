@@ -15,6 +15,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -123,6 +124,10 @@ export class UserController {
         error: 'Server error',
       },
     },
+  })
+  @ApiParam({
+    name: 'newUserId',
+    description: 'userId - new boss for your subordinates',
   })
   @ApiBearerAuth()
   @UseGuards(CheckAccessGuard)

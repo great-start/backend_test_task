@@ -15,7 +15,12 @@ async function bootstrap() {
     .setDescription('The API description')
     .setVersion('1.0')
     .addTag('backend_test_task')
-    .addBearerAuth()
+    .addBearerAuth({
+      type: 'apiKey',
+      bearerFormat: 'Bearer {token}',
+      in: 'headers',
+      name: 'Authorization',
+    })
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
