@@ -126,12 +126,12 @@ export class UserController {
   })
   @ApiBearerAuth()
   @UseGuards(CheckAccessGuard)
-  @Get('change/:changeBossId')
+  @Get('change/:newUserId')
   change(
     @Req() request: IRequestExtended,
-    @Param('changeBossId') bossId: string,
+    @Param('newUserId') newUserId: string,
     @Res() response: Response,
   ) {
-    return this.userService.changeBoss(request, bossId, response);
+    return this.userService.changeBoss(request, newUserId, response);
   }
 }

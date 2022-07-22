@@ -100,7 +100,7 @@ export class UserService {
 
   async changeBoss(
     request: IRequestExtended,
-    changeBossId: string,
+    newBossId: string,
     response: Response,
   ) {
     try {
@@ -117,13 +117,13 @@ export class UserService {
 
       const existingBoss = await this.prismaService.user.findUnique({
         where: {
-          id: +changeBossId,
+          id: +newBossId,
         },
       });
 
       if (!existingBoss) {
         throw new BadRequestException(
-          `User with id - ${changeBossId} does not exist. Choose another id user for BOSS changing`,
+          `User with id - ${newBossId} does not exist. Choose another id user for BOSS changing`,
         );
       }
 
@@ -135,7 +135,7 @@ export class UserService {
             ) SELECT * FROM subordinates`) as IUser[];
 
       bossSubordinates.forEach((user) => {
-        if (user.id === +changeBossId) {
+        if (user.id === +newBossId) {
           throw new BadRequestException(
             'You can not transfer your BOSS rights to one of your subordinates. Choose another id user for BOSS',
           );
@@ -147,12 +147,12 @@ export class UserService {
           bossId: userId,
         },
         data: {
-          bossId: +changeBossId,
+          bossId: +newBossId,
         },
       });
 
       response.status(200).json({
-        message: `You successfully changed boss for your subordinates! New bossId - ${changeBossId}`,
+        message: `You successfully changed boss for your subordinates! New bossId - ${newBossId}`,
       });
     } catch (e) {
       throw new HttpException(
