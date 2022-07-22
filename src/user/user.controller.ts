@@ -31,7 +31,7 @@ export class UserController {
 
   @ApiOperation({
     summary:
-      "Return list off users, taking into account user's role admin, user",
+      "Return list off users, taking into account user's role - admin, boss, user without subordinates",
     description: 'Get list off users',
   })
   @ApiOkResponse({
