@@ -89,8 +89,7 @@ export class UserController {
     status: 403,
     schema: {
       example: {
-        message:
-          'Forbidden resource. Only for users with subordinates. Not for ADMIN',
+        message: 'Forbidden resource. Only for users with subordinates',
         error: 'Forbidden resource',
         statusCode: 403,
       },
