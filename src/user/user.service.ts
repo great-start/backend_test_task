@@ -111,7 +111,7 @@ export class UserService {
 
       if (subordinates === 0) {
         throw new ForbiddenException(
-          `Forbidden resource. Only for users with subordinates`,
+          `Forbidden resource. Only for users with subordinates.`,
         );
       }
 
