@@ -33,7 +33,7 @@ export class AuthService {
 
         if (!existingBoss) {
           throw new BadRequestException(
-            `User with ${user.bossId} does not exist. Put existing related bossId`,
+            `User with id ${user.bossId} does not exist. Put existing related bossId`,
           );
         }
       }
