@@ -3,7 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
 
 import { RegisterAuthDto } from './dto/register-auth.dto';
@@ -17,7 +17,7 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private tokenService: TokenService,
-  ) {}
+  ) { }
 
   public async register(user: RegisterAuthDto) {
     const existingUser = await this.userService.findOneByEmail(user.email);
