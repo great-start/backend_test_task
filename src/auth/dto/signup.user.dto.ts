@@ -28,16 +28,16 @@ export class SignupUserDto {
   @Length(3)
   password: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     example: 'USER',
     description: 'user role (USER | ADMIN). By default - USER',
   })
   @IsEnum(RolesEnum, {
     message: 'user role must be USER or ADMIN. By default - USER',
   })
-  role?: RolesEnum;
+  role: RolesEnum;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: '1',
     description:
       'BossId. Required field if role is USER. Unnecessary for ADMIN. Must be conforming to the id existing user',

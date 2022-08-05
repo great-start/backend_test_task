@@ -2,7 +2,9 @@ import { Exclude, Type } from 'class-transformer';
 
 export class SerializeUserDto {
   id?: number;
+
   name?: string;
+
   email?: string;
 
   @Exclude()
@@ -10,6 +12,7 @@ export class SerializeUserDto {
 
   @Exclude()
   role?: string;
+
   bossId?: number;
 
   @Type(() => SerializeUserDto)

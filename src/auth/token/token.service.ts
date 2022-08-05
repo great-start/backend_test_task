@@ -3,10 +3,14 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
 import { IUser } from '../../user/intefaces/user.inteface';
 import * as jwt from 'jsonwebtoken';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TokenService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly configService: ConfigService,
+  ) {}
 
   public async getToken(user: IUser) {
     return this._generateToken(user);
@@ -19,9 +23,12 @@ export class TokenService {
   }
 
   private _generateToken(user: IUser) {
+    const jwt_key = this.configService.get('JWT_SECRET_KEY');
+    const jwt_time = this.configService.get('JWT_ACCESS_TOKEN_TIME');
+
     const payload = { id: user.id, email: user.email };
-    const accessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-      expiresIn: process.env.JWT_ACCESS_TOKEN_TIME,
+    const accessToken = jwt.sign(payload, jwt_key, {
+      expiresIn: jwt_time,
     });
     return { accessToken, userId: user.id };
   }
@@ -35,6 +42,8 @@ export class TokenService {
   }
 
   public async verifyToken(token: string) {
-    return jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const jwt_key = this.configService.get('JWT_SECRET_KEY');
+
+    return jwt.verify(token, jwt_key);
   }
 }
