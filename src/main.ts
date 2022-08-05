@@ -9,12 +9,11 @@ async function bootstrap() {
   // transform data before send to response
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
-  // SIMPLE SWAGGER
+  // swagger
   const config = new DocumentBuilder()
-    .setTitle('backend_test_task example')
+    .setTitle('backend test task')
     .setDescription('The API description')
     .setVersion('1.0')
-    .addTag('backend_test_task')
     .addBearerAuth({
       type: 'apiKey',
       bearerFormat: 'Bearer {token}',
@@ -23,7 +22,7 @@ async function bootstrap() {
     })
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.PORT);
 }

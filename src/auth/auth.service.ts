@@ -6,10 +6,10 @@ import {
 import * as bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
 
-import { RegisterAuthDto } from './dto/register-auth.dto';
+import { SignupUserDto } from './dto/signup.user.dto';
+import { SigninUserDto } from './dto/signin.user.dto';
 import { UserService } from '../user/user.service';
 import { TokenService } from './token/token.service';
-import { SignInAuthDto } from './dto/signIn-auth.dto';
 import { RolesEnum } from './enum/roles.enum';
 
 @Injectable()
@@ -17,9 +17,9 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private tokenService: TokenService,
-  ) { }
+  ) {}
 
-  public async register(user: RegisterAuthDto) {
+  public async register(user: SignupUserDto) {
     const existingUser = await this.userService.findOneByEmail(user.email);
 
     if (existingUser) {
@@ -55,7 +55,7 @@ export class AuthService {
     };
   }
 
-  public async signIn(user: SignInAuthDto, res: Response) {
+  public async signIn(user: SigninUserDto, res: Response) {
     const existingUser = await this._validateUser(user);
 
     const { accessToken } = await this.tokenService.getToken(existingUser);
@@ -68,7 +68,7 @@ export class AuthService {
     res.status(200).json({ token });
   }
 
-  private async _validateUser(user: SignInAuthDto) {
+  private async _validateUser(user: SigninUserDto) {
     const existingUser = await this.userService.findOneByEmail(user.email);
 
     if (!existingUser) {

@@ -6,7 +6,7 @@ import {
 import { Response } from 'express';
 
 import { PrismaService } from '../prisma.service';
-import { RegisterAuthDto } from '../auth/dto/register-auth.dto';
+import { SignupUserDto } from '../auth/dto/signup.user.dto';
 import { IRequestExtended } from './intefaces/extended.Request.interface';
 import { RolesEnum } from '../auth/enum/roles.enum';
 import { SerializeUserDto } from './dto/serialize.user.dto';
@@ -35,7 +35,7 @@ export class UserService {
     });
   }
 
-  async saveUserToDB(user: RegisterAuthDto) {
+  async saveUserToDB(user: SignupUserDto) {
     return this.prismaService.user.create({ data: user });
   }
 

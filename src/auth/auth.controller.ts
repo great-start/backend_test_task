@@ -10,8 +10,8 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { RegisterAuthDto } from './dto/register-auth.dto';
-import { SignInAuthDto } from './dto/signIn-auth.dto';
+import { SignupUserDto } from './dto/signup.user.dto';
+import { SigninUserDto } from './dto/signin.user.dto';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 
@@ -21,7 +21,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({
-    summary: 'Register user using data',
+    summary: 'Sign up user using SignupUserDto template',
     description: 'Registration',
   })
   @ApiResponse({
@@ -52,14 +52,14 @@ export class AuthController {
       },
     },
   })
-  @ApiBody({ type: RegisterAuthDto })
-  @Post('register')
-  register(@Body() createAuthDto: RegisterAuthDto) {
+  @ApiBody({ type: SignupUserDto })
+  @Post('signup')
+  signup(@Body() createAuthDto: SignupUserDto) {
     return this.authService.register(createAuthDto);
   }
 
   @ApiOperation({
-    summary: 'Sign in using email, password',
+    summary: 'Sign in using SigninUserDto template',
     description: 'Sign in',
   })
   @ApiOkResponse({
@@ -87,9 +87,9 @@ export class AuthController {
       },
     },
   })
-  @ApiBody({ type: SignInAuthDto })
-  @Post('signIn')
-  signIn(@Body() user: SignInAuthDto, @Res() res: Response) {
+  @ApiBody({ type: SigninUserDto })
+  @Post('signin')
+  signin(@Body() user: SigninUserDto, @Res() res: Response) {
     return this.authService.signIn(user, res);
   }
 }

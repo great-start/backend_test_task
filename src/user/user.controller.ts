@@ -25,6 +25,7 @@ import { CheckAccessGuard } from '../auth/guards/check.access.guard';
 import { IRequestExtended } from './intefaces/extended.Request.interface';
 import { UserService } from './user.service';
 
+@ApiBearerAuth()
 @ApiTags('User')
 @Controller('users')
 export class UserController {
@@ -63,7 +64,6 @@ export class UserController {
       },
     },
   })
-  @ApiBearerAuth()
   @UseGuards(CheckAccessGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('/')
@@ -128,7 +128,6 @@ export class UserController {
     name: 'newUserId',
     description: 'userId - new boss for your subordinates',
   })
-  @ApiBearerAuth()
   @UseGuards(CheckAccessGuard)
   @Get('change/:newUserId')
   change(
