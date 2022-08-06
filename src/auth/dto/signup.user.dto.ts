@@ -8,7 +8,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { RolesEnum } from '../enum/roles.enum';
+import { RolesEnum } from '../../model/roles.enum';
 
 export class SignupUserDto {
   @ApiProperty({ example: 'Vanya', description: 'name' })

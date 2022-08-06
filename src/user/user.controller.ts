@@ -135,6 +135,6 @@ export class UserController {
     @Param('newUserId') newUserId: string,
     @Res() response: Response,
   ) {
-    return this.userService.changeBoss(request, newUserId, response);
+    // return this.userService.changeBoss(request, newUserId, response);
   }
 }
