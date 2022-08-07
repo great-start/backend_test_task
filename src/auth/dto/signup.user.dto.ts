@@ -8,7 +8,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { RolesEnum } from '../../models/roles.enum';
+import { RolesEnum } from '../../models';
 
 export class SignupUserDto {
   @ApiProperty({ example: 'Vanya', description: 'name' })
@@ -25,7 +25,7 @@ export class SignupUserDto {
   @ApiProperty({ example: 'Vs78SID12nm', description: 'user password' })
   @IsString()
   @IsNotEmpty()
-  @Length(3)
+  @Length(6)
   password: string;
 
   @ApiProperty({
@@ -33,14 +33,14 @@ export class SignupUserDto {
     description: 'user role (USER | ADMIN). By default - USER',
   })
   @IsEnum(RolesEnum, {
-    message: 'user role must be USER or ADMIN. By default - USER',
+    message: 'user role must be USER or ADMIN',
   })
   role: RolesEnum;
 
   @ApiPropertyOptional({
     example: '1',
     description:
-      'BossId. Required field if role is USER. Unnecessary for ADMIN. Must be conforming to the id existing user',
+      'BossId. Required field if role is USER. Must be conforming to the id existing user. Unnecessary for ADMIN.',
   })
   @ValidateIf((user) => user.role === 'USER')
   @IsNotEmpty({
@@ -50,7 +50,7 @@ export class SignupUserDto {
     {},
     {
       message:
-        'Field bossId must be a number, conforming to the id existing user with role USER',
+        'Field bossId must be a number, corresponding to the id existing user',
     },
   )
   bossId?: number;

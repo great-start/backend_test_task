@@ -31,13 +31,13 @@ export class AuthService {
 
       if (!existingBoss) {
         throw new BadRequestException(
-          `Boss with id ${user.bossId} does not exist. Each user must have existing Boss`,
+          `Boss with id ${user.bossId} does not exist. Each user must have a boss`,
         );
       }
     }
 
     const hashPass = await bcrypt.hash(user.password, 5);
-    const savedUser = await this.userService.saveUserToDB({
+    const savedUser = await this.userService.saveUser({
       ...user,
       password: hashPass,
       bossId: user.role === RolesEnum.ADMIN && user.bossId ? null : user.bossId,
@@ -108,6 +108,8 @@ export class AuthService {
 
     const { email } = await this.tokenService.verifyToken(token);
     const existingUser = await this.userService.findOneByEmail(email);
+
+    console.log(existingUser);
 
     if (!existingUser) {
       throw new UnauthorizedException('Permission denied');

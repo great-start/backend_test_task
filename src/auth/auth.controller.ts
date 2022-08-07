@@ -35,12 +35,19 @@ export class AuthController {
   @ApiBadRequestResponse({
     schema: {
       example: {
+        statusCode: 400,
         message: [
           'name must be longer than or equal to 3 characters',
+          'name should not be empty',
+          'name must be a string',
+          'email should not be empty',
+          'email must be an email',
           'password must be longer than or equal to 3 characters',
+          'password should not be empty',
+          'password must be a string',
+          'user role must be USER or ADMIN',
         ],
-        error: 'User already exists',
-        statusCode: 400,
+        error: 'Bad Request',
       },
     },
   })
@@ -53,8 +60,8 @@ export class AuthController {
     },
   })
   @ApiBody({ type: SignupUserDto })
-  @Post('signup')
-  signup(@Body() createAuthDto: SignupUserDto) {
+  @Post('sign-up')
+  signUp(@Body() createAuthDto: SignupUserDto) {
     return this.authService.register(createAuthDto);
   }
 
@@ -73,9 +80,9 @@ export class AuthController {
   @ApiUnauthorizedResponse({
     schema: {
       example: {
+        statusCode: 401,
         message: 'Wrong email or password',
         error: 'Unauthorized',
-        statusCode: 401,
       },
     },
   })
@@ -88,8 +95,8 @@ export class AuthController {
     },
   })
   @ApiBody({ type: SigninUserDto })
-  @Post('signin')
-  signin(@Body() user: SigninUserDto, @Res() res: Response) {
+  @Post('sign-in')
+  signIn(@Body() user: SigninUserDto, @Res() res: Response) {
     return this.authService.signIn(user, res);
   }
 }

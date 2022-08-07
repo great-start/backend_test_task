@@ -20,7 +20,7 @@ export class TokenService {
   }
 
   public async saveToken(accessToken: string, userId: number) {
-    return this.tokenRepository.create({ accessToken, user: { id: userId } });
+    return this.tokenRepository.save({ accessToken, user: { id: userId } });
 
     // return this.prismaService.token.create({
     //   data: { userId, accessToken },
@@ -33,7 +33,7 @@ export class TokenService {
       payload,
       this.configService.get('JWT_SECRET_KEY'),
       {
-        expiresIn: this.configService.get('JWT_ACCESS_TOKEN_TIME'),
+        expiresIn: '30m',
       },
     );
     return { accessToken, userId: user.id };

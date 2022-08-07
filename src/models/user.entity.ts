@@ -5,6 +5,7 @@ import {
   Entity,
   OneToMany,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { RolesEnum } from './roles.enum';
 import { Token } from './token.entity';
@@ -17,7 +18,7 @@ export class User {
   @Column({ type: 'varchar', length: 30 })
   name: string;
 
-  @Column({ type: 'varchar', length: 100, unique: true })
+  @Column({ type: 'varchar', length: 50, unique: true })
   email: string;
 
   @CreateDateColumn({ type: 'varchar', length: 100 })
@@ -26,13 +27,15 @@ export class User {
   @Column({ type: 'enum', enum: RolesEnum, default: RolesEnum.USER })
   role: RolesEnum;
 
-  @OneToMany(() => User, (user) => user.subordinates, { nullable: true })
+  @ManyToOne(() => User, (user) => user.subordinates)
+  // @JoinColumn({ name: 'bossId' })
   boss: User;
 
-  @ManyToOne(() => User, (user) => user.boss, { nullable: true })
+  @OneToMany(() => User, (user) => user.boss)
+  // @JoinColumn({ name: 'subordinates' })
   subordinates: User[];
 
-  @OneToMany(() => Token, (token) => token.user, { nullable: true })
+  @OneToMany(() => Token, (token) => token.user)
   tokens: Token[];
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
