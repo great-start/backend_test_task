@@ -2,7 +2,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
-  Param,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -15,14 +15,13 @@ import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiParam,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Response } from 'express';
 
 import { CheckAccessGuard } from '../auth/guards/check.access.guard';
-import { IRequestExtended } from './intefaces/extended.Request.interface';
+import { IRequestExtended } from './intefaces';
 import { UserService } from './user.service';
 
 @ApiBearerAuth()
@@ -32,27 +31,29 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiOperation({
-    summary:
-      "Return list off users, taking into account user's role - admin, boss, user without subordinates",
-    description: 'Get list off users',
+    summary: 'Get users',
+    description:
+      'Return - one user (user without subordinates), list of users (boss), all users (admin)',
   })
   @ApiOkResponse({
-    status: 200,
     schema: {
-      example: {
-        id: 5,
-        name: 'Vanya',
-        email: 'Petrov',
-        bossId: 1,
-      },
+      example: [
+        {
+          id: 5,
+          name: 'Vanya',
+          email: 'Petrov',
+          createdAt: new Date(),
+          bossId: 1,
+        },
+      ],
     },
   })
   @ApiUnauthorizedResponse({
     schema: {
       example: {
+        statusCode: 401,
         message: 'Permission denied',
         error: 'Unauthorized',
-        statusCode: 401,
       },
     },
   })
@@ -72,12 +73,11 @@ export class UserController {
   }
 
   @ApiOperation({
-    summary:
+    summary: 'Change user`s boss',
+    description:
       'Change user`s boss, taking into account, that endpoint require user with role USER and who has subordinates',
-    description: 'Change user`s boss',
   })
   @ApiOkResponse({
-    status: 200,
     schema: {
       example: {
         message:
@@ -86,33 +86,29 @@ export class UserController {
     },
   })
   @ApiForbiddenResponse({
-    status: 403,
     schema: {
       example: {
+        statusCode: 403,
         message: 'Forbidden resource. Only for users with subordinates',
         error: 'Forbidden resource',
-        statusCode: 403,
       },
     },
   })
   @ApiUnauthorizedResponse({
-    status: 401,
     schema: {
       example: {
+        statusCode: 401,
         message: 'Permission denied',
         error: 'Unauthorized',
-        statusCode: 401,
       },
     },
   })
   @ApiBadRequestResponse({
-    status: 400,
     schema: {
       example: {
-        message:
-          'User with id - 5 does not exist. Choose another id user for BOSS changing',
-        error: 'Bad request',
         statusCode: 400,
+        message: 'User with id 2 is not your subordinate or does not exist',
+        error: 'Bad request',
       },
     },
   })
@@ -124,17 +120,19 @@ export class UserController {
       },
     },
   })
-  @ApiParam({
-    name: 'newUserId',
-    description: 'userId - new boss for your subordinates',
-  })
   @UseGuards(CheckAccessGuard)
-  @Get('change/:newUserId')
-  change(
+  @Get('/change')
+  changeUserBoss(
     @Req() request: IRequestExtended,
-    @Param('newUserId') newUserId: string,
+    @Query('subordinateId') subordinateId: number,
+    @Query('newBossId') newBossId: number,
     @Res() response: Response,
   ) {
-    // return this.userService.changeBoss(request, newUserId, response);
+    return this.userService.changeUserBoss(
+      request,
+      subordinateId,
+      newBossId,
+      response,
+    );
   }
 }

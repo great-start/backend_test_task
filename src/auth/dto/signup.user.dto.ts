@@ -8,24 +8,25 @@ import {
   IsEnum,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
 import { RolesEnum } from '../../models';
 
 export class SignupUserDto {
   @ApiProperty({ example: 'Vanya', description: 'name' })
   @IsString()
   @IsNotEmpty()
-  @Length(3)
+  @Length(3, 50)
   name: string;
 
-  @ApiProperty({ example: 'vanyaSidorov@gmail.com', description: 'user email' })
+  @ApiProperty({ example: 'vanyaSidorov@gmail.com', description: 'email' })
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({ example: 'Vs78SID12nm', description: 'user password' })
+  @ApiProperty({ example: 'Vs78SID12nm', description: 'password' })
   @IsString()
   @IsNotEmpty()
-  @Length(6)
+  @Length(6, 50)
   password: string;
 
   @ApiProperty({
@@ -40,7 +41,7 @@ export class SignupUserDto {
   @ApiPropertyOptional({
     example: '1',
     description:
-      'BossId. Required field if role is USER. Must be conforming to the id existing user. Unnecessary for ADMIN.',
+      'BossId. Required field if role is USER. Must be conforming to the id existing user. Unnecessary field for ADMIN.',
   })
   @ValidateIf((user) => user.role === 'USER')
   @IsNotEmpty({

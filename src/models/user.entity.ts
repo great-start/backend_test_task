@@ -5,8 +5,8 @@ import {
   Entity,
   OneToMany,
   ManyToOne,
-  JoinColumn,
 } from 'typeorm';
+
 import { RolesEnum } from './roles.enum';
 import { Token } from './token.entity';
 
@@ -21,18 +21,16 @@ export class User {
   @Column({ type: 'varchar', length: 50, unique: true })
   email: string;
 
-  @CreateDateColumn({ type: 'varchar', length: 100 })
+  @CreateDateColumn({ type: 'varchar', length: 50 })
   password: string;
 
   @Column({ type: 'enum', enum: RolesEnum, default: RolesEnum.USER })
   role: RolesEnum;
 
-  @ManyToOne(() => User, (user) => user.subordinates)
-  // @JoinColumn({ name: 'bossId' })
+  @ManyToOne(() => User, (user) => user.subordinates, { nullable: true })
   boss: User;
 
   @OneToMany(() => User, (user) => user.boss)
-  // @JoinColumn({ name: 'subordinates' })
   subordinates: User[];
 
   @OneToMany(() => Token, (token) => token.user)

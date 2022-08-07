@@ -21,11 +21,10 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({
-    summary: 'Sign up user using SignupUserDto template',
-    description: 'Registration',
+    summary: 'Sign up',
+    description: 'Sign up using SignupUserDto schema',
   })
   @ApiResponse({
-    status: 201,
     schema: {
       example: {
         token: 'asd234vdce5te5b123vqfve5tb5tasdcawvwrvergewefvwefvwcefwv',
@@ -70,7 +69,6 @@ export class AuthController {
     description: 'Sign in',
   })
   @ApiOkResponse({
-    status: 200,
     schema: {
       example: {
         token: 'asd234vdce5te5b123vqfve5tb5tc,2308mv0298mcv23v34v45cewcc3c',

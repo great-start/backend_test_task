@@ -10,7 +10,7 @@ import { SignupUserDto } from './dto/signup.user.dto';
 import { SigninUserDto } from './dto/signin.user.dto';
 import { UserService } from '../user/user.service';
 import { TokenService } from './token/token.service';
-import { RolesEnum } from '../models/roles.enum';
+import { RolesEnum } from '../models';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +20,9 @@ export class AuthService {
   ) {}
 
   public async register(user: SignupUserDto) {
-    const existingUser = await this.userService.findOneByEmail(user.email);
+    const existingUser = await this.userService.findOneByEmail(
+      user.email.toLowerCase(),
+    );
 
     if (existingUser) {
       throw new BadRequestException('User already exist');
@@ -31,7 +33,7 @@ export class AuthService {
 
       if (!existingBoss) {
         throw new BadRequestException(
-          `Boss with id ${user.bossId} does not exist. Each user must have a boss`,
+          `Boss with id ${user.bossId} does not exist`,
         );
       }
     }
@@ -69,7 +71,9 @@ export class AuthService {
   }
 
   private async _validateUser(user: SigninUserDto) {
-    const existingUser = await this.userService.findOneByEmail(user.email);
+    const existingUser = await this.userService.findOneByEmail(
+      user.email.toLowerCase(),
+    );
 
     if (!existingUser) {
       throw new UnauthorizedException('Wrong password or email');
@@ -108,8 +112,6 @@ export class AuthService {
 
     const { email } = await this.tokenService.verifyToken(token);
     const existingUser = await this.userService.findOneByEmail(email);
-
-    console.log(existingUser);
 
     if (!existingUser) {
       throw new UnauthorizedException('Permission denied');

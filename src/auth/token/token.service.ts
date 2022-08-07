@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-
-import { IUser } from '../../user/intefaces/user.inteface';
-import * as jwt from 'jsonwebtoken';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as jwt from 'jsonwebtoken';
 import { Repository } from 'typeorm';
+
+import { IUser } from '../../user/intefaces';
 import { Token } from '../../models';
 
 @Injectable()
@@ -21,19 +21,15 @@ export class TokenService {
 
   public async saveToken(accessToken: string, userId: number) {
     return this.tokenRepository.save({ accessToken, user: { id: userId } });
-
-    // return this.prismaService.token.create({
-    //   data: { userId, accessToken },
-    // });
   }
 
   private _generateToken(user: IUser) {
-    const payload = { id: user.id, email: user.email };
+    const payload = { id: user.id, email: user.email.toLowerCase() };
     const accessToken = jwt.sign(
       payload,
       this.configService.get('JWT_SECRET_KEY'),
       {
-        expiresIn: '30m',
+        expiresIn: this.configService.get('JWT_ACCESS_TOKEN_TIME'),
       },
     );
     return { accessToken, userId: user.id };
@@ -43,15 +39,13 @@ export class TokenService {
     return this.tokenRepository.findBy({
       accessToken,
     });
-
-    // return this.prismaService.token.findFirst({
-    //   where: {
-    //     accessToken: token,
-    //   },
-    // });
   }
 
   public async verifyToken(token: string) {
-    return jwt.verify(token, this.configService.get('JWT_SECRET_KEY'));
+    try {
+      return jwt.verify(token, this.configService.get('JWT_SECRET_KEY'));
+    } catch (e) {
+      throw new UnauthorizedException('Token expired');
+    }
   }
 }

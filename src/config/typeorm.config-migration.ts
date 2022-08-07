@@ -1,6 +1,7 @@
-import { Token, User } from '../models';
 import { DataSource } from 'typeorm';
 import { config } from 'dotenv';
+
+import { Token, User } from '../models';
 
 config({ path: `.env.example` });
 
@@ -14,5 +15,5 @@ export const appDataSource = new DataSource({
   entities: [User, Token],
   migrations: ['./src/migrations/*{.ts,.js}'],
   synchronize: false,
-  logging: false,
+  logging: true,
 });
