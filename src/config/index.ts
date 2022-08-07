@@ -1,2 +1,2 @@
-export * from './app.config.service';
-export * from './typeOrm.config.service';
+export * from './typeorm.config';
+export * from './typeorm.config-migration';

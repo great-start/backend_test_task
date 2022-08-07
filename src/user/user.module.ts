@@ -6,8 +6,7 @@ import { CheckAccessGuard } from '../auth/guards/check.access.guard';
 import { TokenService } from '../auth/token/token.service';
 import { AuthService } from '../auth/auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Token, User } from '../model';
-import { AppConfigService } from '../config';
+import { Token, User } from '../models';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Token])],
@@ -17,7 +16,6 @@ import { AppConfigService } from '../config';
     TokenService,
     CheckAccessGuard,
     AuthService,
-    AppConfigService,
   ],
 })
 export class UserModule {}

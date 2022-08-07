@@ -11,7 +11,7 @@ import { SerializeUserDto } from './dto/serialize.user.dto';
 import { IUser } from './intefaces/user.inteface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RolesEnum, User } from '../model';
+import { RolesEnum, User } from '../models';
 
 @Injectable()
 export class UserService {

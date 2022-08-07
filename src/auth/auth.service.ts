@@ -10,7 +10,7 @@ import { SignupUserDto } from './dto/signup.user.dto';
 import { SigninUserDto } from './dto/signin.user.dto';
 import { UserService } from '../user/user.service';
 import { TokenService } from './token/token.service';
-import { RolesEnum } from '../model/roles.enum';
+import { RolesEnum } from '../models/roles.enum';
 
 @Injectable()
 export class AuthService {
