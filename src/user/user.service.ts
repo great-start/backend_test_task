@@ -114,7 +114,6 @@ export class UserService {
 
     const existingUser = await this.userRepository.findOneBy({
       id: +newBossId,
-      role: RolesEnum.USER,
     });
 
     if (!existingUser) {
