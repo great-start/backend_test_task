@@ -22,21 +22,18 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## Backend_task
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Installation
+## Installation process
 
 ```bash
+# install dependencies
 $ npm install
-```
 
-## Init database tables
-
-```bash
-# prisma init database tables
-$ npm run prisma:init
+# init database tables
+$ npm run migration:run
 ```
 
 ## Running the app
@@ -44,12 +41,6 @@ $ npm run prisma:init
 ```bash
 # development
 $ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
 
