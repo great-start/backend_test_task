@@ -41,6 +41,7 @@ export class AuthService {
     const hashPass = await bcrypt.hash(user.password, 5);
     const savedUser = await this.userService.saveUser({
       ...user,
+      email: user.email.toLowerCase(),
       password: hashPass,
       bossId: user.role === RolesEnum.ADMIN && user.bossId ? null : user.bossId,
     });

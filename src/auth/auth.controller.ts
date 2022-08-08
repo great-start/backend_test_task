@@ -25,6 +25,7 @@ export class AuthController {
     description: 'Sign up using SignupUserDto schema',
   })
   @ApiResponse({
+    status: 201,
     schema: {
       example: {
         token: 'asd234vdce5te5b123vqfve5tb5tasdcawvwrvergewefvwefvwcefwv',
@@ -66,7 +67,7 @@ export class AuthController {
 
   @ApiOperation({
     summary: 'Sign in',
-    description: 'Sign in using SigninUserDto template',
+    description: 'Sign in using SigninUserDto schema',
   })
   @ApiOkResponse({
     schema: {
