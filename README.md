@@ -32,6 +32,8 @@
 # install dependencies
 $ npm install
 
+# set up database config in .env.example file
+
 # init database tables
 $ npm run migration:run
 ```
