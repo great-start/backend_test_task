@@ -21,7 +21,7 @@ export class User {
   @Column({ type: 'varchar', length: 50, unique: true })
   email: string;
 
-  @CreateDateColumn({ type: 'varchar', length: 50 })
+  @CreateDateColumn({ type: 'varchar', length: 200 })
   password: string;
 
   @Column({ type: 'enum', enum: RolesEnum, default: RolesEnum.USER })
