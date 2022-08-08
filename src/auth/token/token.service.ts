@@ -36,7 +36,7 @@ export class TokenService {
   }
 
   public async findToken(accessToken: string) {
-    return this.tokenRepository.findBy({
+    return this.tokenRepository.findOneBy({
       accessToken,
     });
   }

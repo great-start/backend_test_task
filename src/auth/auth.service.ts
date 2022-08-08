@@ -107,7 +107,7 @@ export class AuthService {
     const tokenData = await this.tokenService.findToken(token);
 
     if (!tokenData) {
-      throw new UnauthorizedException('Permission denied');
+      throw new UnauthorizedException('Permission denied. Token not valid');
     }
 
     const { email } = await this.tokenService.verifyToken(token);

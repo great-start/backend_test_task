@@ -52,7 +52,7 @@ export class UserController {
     schema: {
       example: {
         statusCode: 401,
-        message: 'Permission denied',
+        message: 'Permission denied. Token not valid',
         error: 'Unauthorized',
       },
     },
@@ -98,7 +98,7 @@ export class UserController {
     schema: {
       example: {
         statusCode: 401,
-        message: 'Permission denied',
+        message: 'Permission denied. Token not valid',
         error: 'Unauthorized',
       },
     },

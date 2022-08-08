@@ -65,8 +65,8 @@ export class AuthController {
   }
 
   @ApiOperation({
-    summary: 'Sign in using SigninUserDto template',
-    description: 'Sign in',
+    summary: 'Sign in',
+    description: 'Sign in using SigninUserDto template',
   })
   @ApiOkResponse({
     schema: {
