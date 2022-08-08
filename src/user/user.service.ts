@@ -84,12 +84,12 @@ export class UserService {
   }
 
   async changeUserBoss(
-    request: IRequestExtended,
+    req: IRequestExtended,
     subordinateId: number,
     newBossId: number,
-    response: Response,
-  ) {
-    const { id, subordinates } = request.user;
+    res: Response,
+  ): Promise<void> {
+    const { id, subordinates } = req.user;
 
     if (subordinates.length === 0) {
       throw new ForbiddenException(
@@ -133,7 +133,7 @@ export class UserService {
       },
     );
 
-    response.status(200).json({
+    res.status(200).json({
       message: `You successfully changed boss for your subordinate! New bossId - ${newBossId}`,
     });
   }

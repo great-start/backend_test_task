@@ -19,7 +19,7 @@ export class TokenService {
     return this._generateToken(user);
   }
 
-  public async saveToken(accessToken: string, userId: number) {
+  public async saveToken(accessToken: string, userId: number): Promise<Token> {
     return this.tokenRepository.save({ accessToken, user: { id: userId } });
   }
 
@@ -35,7 +35,7 @@ export class TokenService {
     return { accessToken, userId: user.id };
   }
 
-  public async findToken(accessToken: string) {
+  public async findToken(accessToken: string): Promise<Token> {
     return this.tokenRepository.findOneBy({
       accessToken,
     });

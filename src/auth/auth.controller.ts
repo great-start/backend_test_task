@@ -61,7 +61,7 @@ export class AuthController {
   })
   @ApiBody({ type: SignupUserDto })
   @Post('sign-up')
-  signUp(@Body() createAuthDto: SignupUserDto) {
+  signUp(@Body() createAuthDto: SignupUserDto): Promise<{ token: string }> {
     return this.authService.register(createAuthDto);
   }
 
@@ -95,7 +95,7 @@ export class AuthController {
   })
   @ApiBody({ type: SigninUserDto })
   @Post('sign-in')
-  signIn(@Body() user: SigninUserDto, @Res() res: Response) {
+  signIn(@Body() user: SigninUserDto, @Res() res: Response): Promise<void> {
     return this.authService.signIn(user, res);
   }
 }

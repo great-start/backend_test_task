@@ -10,7 +10,7 @@ import { SignupUserDto } from './dto/signup.user.dto';
 import { SigninUserDto } from './dto/signin.user.dto';
 import { UserService } from '../user/user.service';
 import { TokenService } from './token/token.service';
-import { RolesEnum } from '../models';
+import { RolesEnum, User } from '../models';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +19,7 @@ export class AuthService {
     private tokenService: TokenService,
   ) {}
 
-  public async register(user: SignupUserDto) {
+  public async register(user: SignupUserDto): Promise<{ token: string }> {
     const existingUser = await this.userService.findOneByEmail(
       user.email.toLowerCase(),
     );
@@ -58,7 +58,7 @@ export class AuthService {
     };
   }
 
-  public async signIn(user: SigninUserDto, res: Response) {
+  public async signIn(user: SigninUserDto, res: Response): Promise<void> {
     const existingUser = await this._validateUser(user);
 
     const { accessToken } = await this.tokenService.getToken(existingUser);
@@ -71,7 +71,7 @@ export class AuthService {
     res.status(200).json({ token });
   }
 
-  private async _validateUser(user: SigninUserDto) {
+  private async _validateUser(user: SigninUserDto): Promise<User> {
     const existingUser = await this.userService.findOneByEmail(
       user.email.toLowerCase(),
     );
@@ -92,7 +92,7 @@ export class AuthService {
     return existingUser;
   }
 
-  async checkAccess(request: Request) {
+  async checkAccess(request: Request): Promise<User> {
     const authHeader = request.headers.authorization;
 
     if (!authHeader) {

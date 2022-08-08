@@ -24,6 +24,7 @@ import { Response } from 'express';
 import { CheckAccessGuard } from '../auth/guards/check.access.guard';
 import { IRequestExtended } from './intefaces';
 import { UserService } from './user.service';
+import { SerializeUserDto } from './dto/serialize.user.dto';
 
 @ApiBearerAuth()
 @ApiTags('User')
@@ -69,7 +70,9 @@ export class UserController {
   @UseGuards(CheckAccessGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('/')
-  getUsersList(@Req() request: IRequestExtended) {
+  getUsersList(
+    @Req() request: IRequestExtended,
+  ): Promise<SerializeUserDto | SerializeUserDto[]> {
     return this.userService.getUsersList(request);
   }
 
@@ -128,7 +131,7 @@ export class UserController {
     @Query('subordinateId') subordinateId: number,
     @Query('newBossId') newBossId: number,
     @Res() response: Response,
-  ) {
+  ): Promise<void> {
     return this.userService.changeUserBoss(
       request,
       subordinateId,
