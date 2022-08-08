@@ -20,8 +20,14 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  const port = app.get(ConfigService).get('PORT');
+  const PORT = app.get(ConfigService).get('PORT');
+  const HOST = app.get(ConfigService).get('HOST');
+  const PROTOCOL = app.get(ConfigService).get('PROTOCOL');
+  const swaggerUrl = app.get(ConfigService).get('SWAGGER_URL');
 
-  await app.listen(port);
+  await app.listen(PORT, () => {
+    console.log(`Server has been started on ${PROTOCOL}://${HOST}:${PORT}`);
+    console.log(`Open swagger ${PROTOCOL}://${HOST}:${PORT}/${swaggerUrl}`);
+  });
 }
 bootstrap();
