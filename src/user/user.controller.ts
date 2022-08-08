@@ -2,6 +2,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Post,
   Query,
   Req,
   Res,
@@ -121,7 +122,7 @@ export class UserController {
     },
   })
   @UseGuards(CheckAccessGuard)
-  @Get('/change')
+  @Post('/change')
   changeUserBoss(
     @Req() request: IRequestExtended,
     @Query('subordinateId') subordinateId: number,
