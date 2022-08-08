@@ -73,7 +73,7 @@ export class UserService {
     }
   }
 
-  async getSubordinatesArray(id: number) {
+  async getSubordinatesArray(id: number): Promise<SerializeUserDto[]> {
     return (await this.userRepository.query(`
             WITH RECURSIVE subordinates AS (SELECT id, name, email, "createdAt", "bossId"
                 FROM "user" WHERE id = ${+id}
